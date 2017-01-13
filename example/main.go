@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/philipjkim/kafka-brokers-go"
 )
@@ -14,12 +13,14 @@ func main() {
 		panic(err)
 	}
 
+	defer c.Close()
+
 	for {
 		brokers, ch, err := c.GetW()
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("%q\n", strings.Join(brokers, ","))
+		fmt.Printf("%q\n", brokers)
 		e := <-ch
 		fmt.Printf("%v\n", e.Type)
 	}

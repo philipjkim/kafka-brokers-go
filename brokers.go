@@ -22,7 +22,7 @@ type Conn struct {
 	zkConn *zk.Conn
 }
 
-// GetW returns a list of all registered Kafka brokers, and watches that list for changes.
+// GetW returns a list of all Kafka brokers, and a channel for watching changes.
 func (c *Conn) GetW() ([]string, <-chan zk.Event, error) {
 	children, _, ch, err := c.zkConn.ChildrenW("/brokers/ids")
 	if err != nil {
@@ -44,6 +44,12 @@ func (c *Conn) GetW() ([]string, <-chan zk.Event, error) {
 		result = append(result, broker.String())
 	}
 	return result, ch, nil
+}
+
+// Close closes the connection with the Zookeeper.
+func (c *Conn) Close() error {
+	c.zkConn.Close()
+	return nil
 }
 
 type kafkaBroker struct {
